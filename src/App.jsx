@@ -9,6 +9,7 @@ import Loder from "./components/Loader";
 import Error from "./components/Error";
 import Question from "./components/Question";
 import StartScreen from "./components/StartScreen";
+import Progress from "./components/Progress";
 
 const INITIAL_STATE = {
   questions: [],
@@ -40,8 +41,9 @@ const reducer = (state, action) => {
       };
 
     case "newIndex":
-      const question = state.questions.at(action.payload);
-
+      const question = state.questions[(action.payload)];
+      console.log("Points:", state.points)
+      console.log("question:", question)
       return {
         ...state,
         answer: action.payload,
@@ -53,9 +55,9 @@ const reducer = (state, action) => {
 
     case "nextQuestion":
       return {
-        ...state, 
+        ...state,
         index: state.index + 1,
-        answer:null ,
+        answer: null,
       };
 
     default:
@@ -70,6 +72,8 @@ function App() {
   );
 
   const numQuestion = questions.length;
+  const totalpoints = questions.reduce((prev, curr) => prev + curr.points, 0)
+
   useEffect(() => {
     fetch("http://localhost:9000/questions")
       .then((res) => res.json())
@@ -84,8 +88,9 @@ function App() {
   return (
     <div className="app">
       {/* <Header /> */}
-      {points}
+
       <Main className="main">
+        <Progress numQuestion={numQuestion} totalpoints={totalpoints} index={index} answer={answer} points={points} />
         {status === "loading" && <Loder />}
         {status === "error" && <Error />}
         {status === "ready" && (
@@ -98,7 +103,7 @@ function App() {
             dispatch={dispatch}
           />
         )}
-        <NextButton dispatch={dispatch} answer={answer}/>
+        <NextButton dispatch={dispatch} answer={answer} />
       </Main>
 
     </div>
@@ -106,9 +111,9 @@ function App() {
 }
 
 
-function NextButton({dispatch, answer}){
-  if(!answer) return null;
-  return <button onClick={()=> dispatch({type:"nextQuestion"})} className="btn btn-ui">
+function NextButton({ dispatch, answer }) {
+  if (!answer) return null;
+  return <button onClick={() => dispatch({ type: "nextQuestion" })} className="btn btn-ui">
     Next
   </button>
 }

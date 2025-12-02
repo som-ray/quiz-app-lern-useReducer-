@@ -11,7 +11,7 @@ export default function Question({ questionData, answer, dispatch }) {
 
 function QuestionList({ questionData, answer, dispatch }) {
   const hasAnswered = answer !== null;
-  console.log(questionData)
+  // console.log(questionData)
   return (
     <div className="options">
       {questionData.options.map((op, index) => (
@@ -19,12 +19,11 @@ function QuestionList({ questionData, answer, dispatch }) {
           className={`btn btn-option 
             ${index === answer ? `answer` : ""}
             
-            ${
-              hasAnswered
-                ? index === questionData.correctOption
-                  ? "correct"
-                  : "wrong"
-                : ""
+            ${hasAnswered
+              ? index === questionData.correctOption
+                ? "correct"
+                : "wrong"
+              : ""
             }
             `}
           key={op}
