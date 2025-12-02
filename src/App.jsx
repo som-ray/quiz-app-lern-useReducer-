@@ -13,7 +13,8 @@ import StartScreen from "./components/StartScreen";
 const INITIAL_STATE = {
   questions: [],
   index: 0,
-
+  answer: null,
+  points: 0,
   status: "loading",
 };
 
@@ -38,16 +39,27 @@ const reducer = (state, action) => {
         status: "active",
       };
 
+    case "newIndex":
+      const question = state.questions.at(action.payload);
+      console.log(question)
+      return {
+        ...state, 
+        answer: action.payload,
+        points: (action.payload === question.correctOption ) ?
+                state.points + question.points : state.points
+      };
+
     default:
       throw new Error("Not valid Type");
   }
 };
 
 function App() {
-  const [{ questions, status, index }, dispatch] = useReducer(
+  const [{ questions, status, index, answer , points}, dispatch] = useReducer(
     reducer,
     INITIAL_STATE
   );
+
 
   const numQuestion = questions.length;
   useEffect(() => {
@@ -63,14 +75,21 @@ function App() {
   }, []);
   return (
     <div className="app">
-      <Header />
+      {/* <Header /> */}
+      {points}
       <Main className="main">
         {status === "loading" && <Loder />}
         {status === "error" && <Error />}
         {status === "ready" && (
           <StartScreen numQuestion={numQuestion} dispatch={dispatch} />
         )}
-        {status === "active" && <Question questionData={questions[index]} />}
+        {status === "active" && (
+          <Question
+            questionData={questions[index]}
+            answer={answer}
+            dispatch={dispatch}
+          />
+        )}
       </Main>
     </div>
   );
