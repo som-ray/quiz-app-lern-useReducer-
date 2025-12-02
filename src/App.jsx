@@ -41,12 +41,21 @@ const reducer = (state, action) => {
 
     case "newIndex":
       const question = state.questions.at(action.payload);
-      console.log(question)
+
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question.correctOption
+            ? state.points + question.points
+            : state.points,
+      };
+
+    case "nextQuestion":
       return {
         ...state, 
-        answer: action.payload,
-        points: (action.payload === question.correctOption ) ?
-                state.points + question.points : state.points
+        index: state.index + 1,
+        answer:null ,
       };
 
     default:
@@ -55,11 +64,10 @@ const reducer = (state, action) => {
 };
 
 function App() {
-  const [{ questions, status, index, answer , points}, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
     reducer,
     INITIAL_STATE
   );
-
 
   const numQuestion = questions.length;
   useEffect(() => {
@@ -90,9 +98,18 @@ function App() {
             dispatch={dispatch}
           />
         )}
+        <NextButton dispatch={dispatch} answer={answer}/>
       </Main>
+
     </div>
   );
 }
 
+
+function NextButton({dispatch, answer}){
+  if(!answer) return null;
+  return <button onClick={()=> dispatch({type:"nextQuestion"})} className="btn btn-ui">
+    Next
+  </button>
+}
 export default App;
